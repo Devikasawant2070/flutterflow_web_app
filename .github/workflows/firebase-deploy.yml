@@ -6,28 +6,25 @@ on:
       - flutterflow
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install Firebase CLI
-      run: npm install -g firebase-tools
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
 
-    - name: Authenticate with Service Account
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
-      run: |
-        echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > firebase-key.json
+      - name: Write service account credentials to file
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > $HOME/firebase.json
 
-    - name: Deploy to Firebase Hosting
-      run: firebase deploy --only hosting --project school-4e5c2
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
+      - name: Deploy to Firebase Hosting
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/firebase.json
+        run: firebase deploy --only hosting --project school-4e5c2
